@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab Experiment Console (Simulated)</title>
+<style>
+  * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+  body { margin: 0; background: #0f1420; color: #e8ecf4; }
+  .banner { background: #5b4306; color: #ffe08a; padding: 8px 16px; font-size: 13px; }
+  .layout { display: grid; grid-template-columns: 300px 1fr 340px; gap: 12px; padding: 12px; height: calc(100vh - 37px); }
+  .panel { background: #18202f; border: 1px solid #2a3650; border-radius: 8px; padding: 12px; overflow-y: auto; }
+  h2 { margin: 0 0 10px; font-size: 15px; color: #9fb4d8; }
+  .card { background: #202a40; border: 1px solid #31405f; border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; cursor: pointer; }
+  .card.selected { border-color: #5ea0ff; }
+  .card .meta { font-size: 12px; color: #9fb4d8; }
+  .pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #2a3650; margin-right: 4px; }
+  .pill.completed { background: #1d4d2b; color: #9fe6b4; }
+  .pill.running { background: #4d3a1d; color: #ffd98a; }
+  .pill.failed { background: #5b1d1d; color: #ff9e9e; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #2a3650; }
+  th { color: #9fb4d8; font-weight: 600; }
+  tr.leader td { color: #9fe6b4; font-weight: 600; }
+  input, select, button { font-size: 13px; padding: 6px 8px; border-radius: 6px; border: 1px solid #31405f; background: #0f1420; color: #e8ecf4; }
+  button { background: #2b5cb8; border-color: #2b5cb8; cursor: pointer; }
+  button:hover { background: #3a6fd0; }
+  form { display: grid; gap: 8px; margin-top: 12px; }
+  label { font-size: 12px; color: #9fb4d8; display: grid; gap: 4px; }
+  .row { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+  .kv { font-size: 13px; margin: 4px 0; }
+  .kv b { color: #9fb4d8; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="banner">SIMULATED DATA: independent prototype, not affiliated with any company. All experiment measurements here are synthetic.</div>
+<div class="layout">
+  <div class="panel" id="hypPanel">
+    <h2>Hypothesis queue</h2>
+    <div id="hypList"></div>
+    <form id="hypForm">
+      <label>Title <input name="title" required></label>
+      <label>Property <input name="property" required placeholder="conductivity"></label>
+      <label>Unit <input name="unit" required placeholder="mS/cm"></label>
+      <label>Direction
+        <select name="direction">
+          <option value="maximize">maximize</option>
+          <option value="minimize">minimize</option>
+          <option value="hit-target">hit target</option>
+        </select>
+      </label>
+      <label>Target value (hit-target only) <input name="targetValue" type="number" step="any"></label>
+      <label>Description <input name="description"></label>
+      <button type="submit">Add hypothesis</button>
+    </form>
+  </div>
+  <div class="panel">
+    <h2 id="runsTitle">Runs</h2>
+    <div id="runList"></div>
+    <h2>Scoring</h2>
+    <table id="scoreTable"><thead><tr><th>Rank</th><th>Run</th><th>Measured</th><th>Score</th></tr></thead><tbody></tbody></table>
+    <form id="runForm">
+      <h2>Add run</h2>
+      <label>Name <input name="name" required></label>
+      <label>Temperature (C) <input name="temperature" type="number" step="any" value="550" required></label>
+      <label>Concentration (mol/L) <input name="concentration" type="number" step="any" value="1.0" required></label>
+      <label>Dwell (min) <input name="dwellMinutes" type="number" value="120" required></label>
+      <button type="submit">Queue run</button>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>Run detail</h2>
+    <div id="detail">Select a run to inspect it.</div>
+  </div>
+</div>
+<script>
+const api = (m, p, b) => fetch(p, { method: m, headers: {"Content-Type":"application/json"}, body: b ? JSON.stringify(b) : undefined }).then(async r => {
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || ("HTTP " + r.status));
+  return j;
+});
+let selectedHyp = null, selectedRun = null, hypotheses = [], scoreData = null;
+
+async function loadHyps() {
+  hypotheses = await api("GET", "/api/hypotheses");
+  if (!selectedHyp && hypotheses.length) selectedHyp = hypotheses[0].id;
+  renderHyps();
+  await loadRuns();
+}
+function renderHyps() {
+  const el = document.getElementById("hypList");
+  el.innerHTML = "";
+  hypotheses.forEach(h => {
+    const d = document.createElement("div");
+    d.className = "card" + (h.id === selectedHyp ? " selected" : "");
+    d.innerHTML = `<div><b>${esc(h.title)}</b></div>
+      <div class="meta">${esc(h.property)} (${esc(h.unit)}) &middot; ${h.direction}${h.targetValue != null ? " @ " + h.targetValue : ""}</div>
+      <div class="meta"><span class="pill">${h.status}</span></div>`;
+    d.onclick = () => { selectedHyp = h.id; selectedRun = null; renderHyps(); loadRuns(); };
+    el.appendChild(d);
+  });
+}
+async function loadRuns() {
+  if (!selectedHyp) return;
+  const h = hypotheses.find(x => x.id === selectedHyp);
+  document.getElementById("runsTitle").textContent = "Runs: " + h.title;
+  const runs = await api("GET", "/api/runs?hypothesisId=" + selectedHyp);
+  const el = document.getElementById("runList");
+  el.innerHTML = "";
+  runs.forEach(r => {
+    const d = document.createElement("div");
+    d.className = "card" + (r.id === selectedRun ? " selected" : "");
+    d.innerHTML = `<div><b>${esc(r.name)}</b> <span class="pill ${r.status}">${r.status}</span></div>
+      <div class="meta">T ${r.parameters.temperature}C &middot; c ${r.parameters.concentration} mol/L &middot; ${r.parameters.dwellMinutes} min${r.outcome ? " &middot; measured " + r.outcome.value + " " + esc(r.outcome.unit) : ""}</div>`;
+    d.onclick = () => { selectedRun = r.id; showDetail(r); renderDetail(); };
+    el.appendChild(d);
+  });
+  try {
+    scoreData = await api("GET", "/api/scoring/" + selectedHyp);
+    const tb = document.querySelector("#scoreTable tbody");
+    tb.innerHTML = "";
+    scoreData.ranking.forEach(s => {
+      const tr = document.createElement("tr");
+      if (s.rank === 1) tr.className = "leader";
+      tr.innerHTML = `<td>${s.rank}</td><td>${esc(s.run.name)}</td><td>${s.run.outcome.value} ${esc(s.run.outcome.unit)}</td><td>${s.score.toFixed(3)}</td>`;
+      tb.appendChild(tr);
+    });
+  } catch (e) { /* no scored runs yet */ }
+  renderDetail();
+}
+let detailRun = null;
+function showDetail(r) { detailRun = r; }
+function renderDetail() {
+  const el = document.getElementById("detail");
+  if (!detailRun) { el.textContent = "Select a run to inspect it."; return; }
+  const r = detailRun;
+  el.innerHTML = `
+    <div class="kv"><b>Name:</b> ${esc(r.name)}</div>
+    <div class="kv"><b>Status:</b> ${r.status}</div>
+    <div class="kv"><b>Parameters:</b> ${r.parameters.temperature}C, ${r.parameters.concentration} mol/L, ${r.parameters.dwellMinutes} min dwell</div>
+    <div class="kv"><b>Outcome:</b> ${r.outcome ? r.outcome.value + " " + esc(r.outcome.unit) + " (simulated)" : "none yet"}</div>
+    <div class="row">
+      <select id="stSel">
+        ${["queued","running","completed","failed"].map(s => `<option ${s === r.status ? "selected" : ""}>${s}</option>`).join("")}
+      </select>
+      <input id="valIn" type="number" step="any" placeholder="measured value">
+      <button id="saveBtn">Save</button>
+    </div>`;
+  document.getElementById("saveBtn").onclick = async () => {
+    const status = document.getElementById("stSel").value;
+    const v = document.getElementById("valIn").value;
+    const patch = { status };
+    if (v !== "") patch.outcome = { value: Number(v) };
+    detailRun = await api("PATCH", "/api/runs/" + r.id, patch);
+    await loadRuns();
+  };
+}
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+document.getElementById("hypForm").onsubmit = async e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const h = await api("POST", "/api/hypotheses", {
+    title: f.get("title"), property: f.get("property"), unit: f.get("unit"),
+    direction: f.get("direction"), targetValue: f.get("targetValue") === "" ? undefined : Number(f.get("targetValue")),
+    description: f.get("description")
+  });
+  selectedHyp = h.id; e.target.reset(); await loadHyps();
+};
+document.getElementById("runForm").onsubmit = async e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  await api("POST", "/api/runs", {
+    hypothesisId: selectedHyp, name: f.get("name"),
+    parameters: { temperature: Number(f.get("temperature")), concentration: Number(f.get("concentration")), dwellMinutes: Number(f.get("dwellMinutes")) }
+  });
+  await loadRuns();
+};
+loadHyps();
+</script>
+</body>
+</html>

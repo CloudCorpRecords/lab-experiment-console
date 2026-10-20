@@ -1,0 +1,1 @@
+{"description":"Independent prototype: autonomous lab experiment tracking console. Not affiliated with any company. All experiment data is simulated.","name":"lab-experiment-console","scripts":{"start":"node src/server.ts","test":"node --test tests/*.test.ts"},"type":"module","version":"0.1.0"}

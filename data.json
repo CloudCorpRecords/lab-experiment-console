@@ -1,0 +1,288 @@
+{
+  "hypotheses": [
+    {
+      "id": "hyp-1",
+      "title": "Boost ionic conductivity in solid electrolyte",
+      "description": "Sweep annealing temperature and dopant concentration to raise room-temperature ionic conductivity.",
+      "property": "conductivity",
+      "unit": "mS/cm",
+      "direction": "maximize",
+      "targetValue": null,
+      "status": "in_progress",
+      "createdAt": "2026-10-19T22:23:51.350Z"
+    },
+    {
+      "id": "hyp-2",
+      "title": "Hit bandgap target for perovskite absorber",
+      "description": "Tune composition to land the absorber bandgap at 1.34 eV for the tandem stack.",
+      "property": "bandgap",
+      "unit": "eV",
+      "direction": "hit-target",
+      "targetValue": 1.34,
+      "status": "in_progress",
+      "createdAt": "2026-10-19T22:23:51.351Z"
+    },
+    {
+      "id": "hyp-3",
+      "title": "Lower thermal conductivity of thermoelectric",
+      "description": "Reduce lattice thermal conductivity without collapsing the power factor.",
+      "property": "thermal-conductivity",
+      "unit": "W/(mK)",
+      "direction": "minimize",
+      "targetValue": null,
+      "status": "open",
+      "createdAt": "2026-10-19T22:23:51.351Z"
+    },
+    {
+      "id": "hyp-4",
+      "title": "Raise tensile strength of high-entropy alloy",
+      "description": "Explore dwell time and temperature for grain refinement and strength gains.",
+      "property": "tensile-strength",
+      "unit": "MPa",
+      "direction": "maximize",
+      "targetValue": null,
+      "status": "open",
+      "createdAt": "2026-10-19T22:23:51.351Z"
+    }
+  ],
+  "runs": [
+    {
+      "id": "run-1",
+      "hypothesisId": "hyp-1",
+      "name": "conductivity-r1",
+      "parameters": {
+        "temperature": 400,
+        "concentration": 0.5,
+        "dwellMinutes": 60
+      },
+      "outcome": {
+        "value": 2.3,
+        "unit": "mS/cm",
+        "measuredAt": "2026-10-19T22:23:51.351Z"
+      },
+      "status": "completed",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-2",
+      "hypothesisId": "hyp-1",
+      "name": "conductivity-r2",
+      "parameters": {
+        "temperature": 425,
+        "concentration": 0.75,
+        "dwellMinutes": 90
+      },
+      "outcome": {
+        "value": 2.77,
+        "unit": "mS/cm",
+        "measuredAt": "2026-10-19T22:23:51.352Z"
+      },
+      "status": "completed",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-3",
+      "hypothesisId": "hyp-1",
+      "name": "conductivity-r3",
+      "parameters": {
+        "temperature": 450,
+        "concentration": 1,
+        "dwellMinutes": 120
+      },
+      "outcome": null,
+      "status": "running",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-4",
+      "hypothesisId": "hyp-2",
+      "name": "bandgap-r1",
+      "parameters": {
+        "temperature": 550,
+        "concentration": 0.5,
+        "dwellMinutes": 60
+      },
+      "outcome": {
+        "value": 1.198,
+        "unit": "eV",
+        "measuredAt": "2026-10-19T22:23:51.352Z"
+      },
+      "status": "completed",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-5",
+      "hypothesisId": "hyp-2",
+      "name": "bandgap-r2",
+      "parameters": {
+        "temperature": 575,
+        "concentration": 0.75,
+        "dwellMinutes": 90
+      },
+      "outcome": {
+        "value": 1.348,
+        "unit": "eV",
+        "measuredAt": "2026-10-19T22:23:51.352Z"
+      },
+      "status": "completed",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-6",
+      "hypothesisId": "hyp-2",
+      "name": "bandgap-r3",
+      "parameters": {
+        "temperature": 600,
+        "concentration": 1,
+        "dwellMinutes": 120
+      },
+      "outcome": {
+        "value": 1.199,
+        "unit": "eV",
+        "measuredAt": "2026-10-19T22:23:51.352Z"
+      },
+      "status": "completed",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-7",
+      "hypothesisId": "hyp-2",
+      "name": "bandgap-r4",
+      "parameters": {
+        "temperature": 625,
+        "concentration": 1.25,
+        "dwellMinutes": 150
+      },
+      "outcome": null,
+      "status": "running",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-8",
+      "hypothesisId": "hyp-3",
+      "name": "thermal-conductivity-r1",
+      "parameters": {
+        "temperature": 700,
+        "concentration": 0.5,
+        "dwellMinutes": 60
+      },
+      "outcome": {
+        "value": 3.4,
+        "unit": "W/(mK)",
+        "measuredAt": "2026-10-19T22:23:51.352Z"
+      },
+      "status": "completed",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-9",
+      "hypothesisId": "hyp-3",
+      "name": "thermal-conductivity-r2",
+      "parameters": {
+        "temperature": 725,
+        "concentration": 0.75,
+        "dwellMinutes": 90
+      },
+      "outcome": {
+        "value": 3.26,
+        "unit": "W/(mK)",
+        "measuredAt": "2026-10-19T22:23:51.352Z"
+      },
+      "status": "completed",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-10",
+      "hypothesisId": "hyp-3",
+      "name": "thermal-conductivity-r3",
+      "parameters": {
+        "temperature": 750,
+        "concentration": 1,
+        "dwellMinutes": 120
+      },
+      "outcome": null,
+      "status": "running",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-11",
+      "hypothesisId": "hyp-4",
+      "name": "tensile-strength-r1",
+      "parameters": {
+        "temperature": 850,
+        "concentration": 0.5,
+        "dwellMinutes": 60
+      },
+      "outcome": {
+        "value": 621,
+        "unit": "MPa",
+        "measuredAt": "2026-10-19T22:23:51.352Z"
+      },
+      "status": "completed",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-12",
+      "hypothesisId": "hyp-4",
+      "name": "tensile-strength-r2",
+      "parameters": {
+        "temperature": 875,
+        "concentration": 0.75,
+        "dwellMinutes": 90
+      },
+      "outcome": {
+        "value": 669,
+        "unit": "MPa",
+        "measuredAt": "2026-10-19T22:23:51.352Z"
+      },
+      "status": "completed",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-13",
+      "hypothesisId": "hyp-4",
+      "name": "tensile-strength-r3",
+      "parameters": {
+        "temperature": 900,
+        "concentration": 1,
+        "dwellMinutes": 120
+      },
+      "outcome": {
+        "value": 721,
+        "unit": "MPa",
+        "measuredAt": "2026-10-19T22:23:51.352Z"
+      },
+      "status": "completed",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    },
+    {
+      "id": "run-14",
+      "hypothesisId": "hyp-4",
+      "name": "tensile-strength-r4",
+      "parameters": {
+        "temperature": 925,
+        "concentration": 1.25,
+        "dwellMinutes": 150
+      },
+      "outcome": null,
+      "status": "running",
+      "createdAt": "2026-10-19T22:23:51.352Z",
+      "updatedAt": "2026-10-19T22:23:51.352Z"
+    }
+  ],
+  "nextHypothesisId": 5,
+  "nextRunId": 16
+}
